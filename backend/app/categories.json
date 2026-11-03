@@ -1,0 +1,74 @@
+[
+  {
+    "code": "rendas",
+    "label": "Rendas",
+    "suggestions": [
+      "RENDA LÍQUIDA",
+      "BÔNUS",
+      "FÉRIAS",
+      "DÉCIMO TERCEIRO SALÁRIO"
+    ]
+  },
+  {
+    "code": "bancarias",
+    "label": "Dívidas bancárias em conta",
+    "suggestions": [
+      "Cartão -",
+      "Cheque Especial -",
+      "Crédito Pessoal -"
+    ]
+  },
+  {
+    "code": "consignados",
+    "label": "Consignados e descontos em folha",
+    "suggestions": [
+      "Consignado -"
+    ]
+  },
+  {
+    "code": "fixas",
+    "label": "Despesas fixas",
+    "suggestions": [
+      "Financiamento Hab.",
+      "Condomínio",
+      "Financiamento Veículo",
+      "Diarista",
+      "Personal",
+      "Academia",
+      "Creche",
+      "Faculdade",
+      "Telefone",
+      "Internet",
+      "Impostos",
+      "Assinaturas (Totalpass, apple, netflix)"
+    ]
+  },
+  {
+    "code": "variaveis",
+    "label": "Despesas variáveis",
+    "suggestions": [
+      "Supermercado",
+      "Energia",
+      "Água",
+      "Gás",
+      "Combustível",
+      "Lazer",
+      "Feira",
+      "Cuidados Pessoais",
+      "Farmácia",
+      "Pedágios e pagamentos de veículo",
+      "Estacionamento"
+    ]
+  },
+  {
+    "code": "eventuais",
+    "label": "Despesas eventuais",
+    "suggestions": [
+      "Ipva | Licenciamento",
+      "Rematrícula Escolar",
+      "Imposto de Renda",
+      "Revisões Carro",
+      "IPTU"
+    ]
+  }
+]
