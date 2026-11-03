@@ -1,0 +1,39 @@
+# Requires Docker Compose >= 2.24 for !reset.
+services:
+  db:
+    ports: !reset []
+  web:
+    ports: !reset []
+    environment:
+      APP_ENV: production
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=172.30.40.2"]
+    networks:
+      default: {}
+      edge:
+        ipv4_address: 172.30.40.3
+  caddy:
+    image: caddy:2.10-alpine
+    environment:
+      P4_DOMAIN: ${P4_DOMAIN:?Defina P4_DOMAIN em .env para o domínio real}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      edge:
+        ipv4_address: 172.30.40.2
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+networks:
+  edge:
+    ipam:
+      config:
+        - subnet: 172.30.40.0/24
+volumes:
+  caddy-data:
+  caddy-config:

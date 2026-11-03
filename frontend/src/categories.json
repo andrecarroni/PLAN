@@ -12,18 +12,12 @@
   {
     "code": "bancarias",
     "label": "Dívidas bancárias em conta",
-    "suggestions": [
-      "Cartão -",
-      "Cheque Especial -",
-      "Crédito Pessoal -"
-    ]
+    "suggestions": ["Cartão -", "Cheque Especial -", "Crédito Pessoal -"]
   },
   {
     "code": "consignados",
     "label": "Consignados e descontos em folha",
-    "suggestions": [
-      "Consignado -"
-    ]
+    "suggestions": ["Consignado -"]
   },
   {
     "code": "fixas",
