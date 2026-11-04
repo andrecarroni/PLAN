@@ -20,7 +20,6 @@ services:
     image: p4-consultores:rebuild
     build:
       context: .
-      secrets: [proxy_ca, ca_bundle]
     environment:
       DATABASE_URL: postgresql+psycopg://p4:${POSTGRES_PASSWORD}@db:5432/p4
     command: ["alembic", "upgrade", "head"]
@@ -31,7 +30,6 @@ services:
     image: p4-consultores:rebuild
     build:
       context: .
-      secrets: [proxy_ca, ca_bundle]
     environment:
       DATABASE_URL: postgresql+psycopg://p4:${POSTGRES_PASSWORD}@db:5432/p4
       APP_ENV: ${APP_ENV:-development}
@@ -46,10 +44,5 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-secrets:
-  proxy_ca:
-    file: ${P4_PROXY_CA:-/etc/ssl/certs/ca-certificates.crt}
-  ca_bundle:
-    file: ${P4_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}
 volumes:
   p4-data:

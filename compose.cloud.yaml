@@ -1,0 +1,13 @@
+# Optional CA mounts for the managed cloud proxy; not required on regular Windows/macOS/Linux hosts.
+services:
+  migrate:
+    build:
+      secrets: [proxy_ca, ca_bundle]
+  web:
+    build:
+      secrets: [proxy_ca, ca_bundle]
+secrets:
+  proxy_ca:
+    file: ${P4_PROXY_CA:?Defina P4_PROXY_CA com o certificado do proxy da nuvem}
+  ca_bundle:
+    file: ${P4_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}

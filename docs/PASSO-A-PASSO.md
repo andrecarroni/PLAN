@@ -6,9 +6,9 @@ O código foi reconstruído porque o checkout restaurado tinha apenas o README i
 
 1. Baixe `p4-consultores-codigo.zip` e `p4-consultores-historico.bundle` pelos links da entrega.
 2. Guarde-os no computador e em outro local de sua confiança. O ZIP serve para abrir os arquivos; o bundle preserva os commits.
-3. **O envio ao GitHub está pendente de autorização específica.** A revisão automática recusou o push para **codex/p4-reconstrucao-20261103** por falta dessa autorização. Enquanto isso, guarde o ZIP e o bundle. Não trate a publicação do ambiente como prova de preservação no GitHub.
+3. O envio foi autorizado e confirmado na branch **codex/p4-reconstrucao-20261103**. No GitHub, selecione essa branch, clique em **Code → Download ZIP** e extraia o arquivo. Para guardar o histórico, use `git clone --branch codex/p4-reconstrucao-20261103 https://github.com/andrecarroni/PLAN.git`.
 4. Se o GitHub ainda não tiver a branch, extraia o ZIP e faça upload dos arquivos/pastas na interface do seu repositório. Não envie `.env`, backups ou senhas. Com Git instalado, o bundle também pode ser clonado: `git clone p4-consultores-historico.bundle PLAN`; o checkout será o commit exportado.
-5. Nas configurações deste ambiente, revise e salve as instruções novas. Como o envio ao GitHub está pendente, o instalador inclui uma restauração local a partir do bundle verificado, guardado fora do checkout. Publique o **ambiente** somente depois de guardar uma cópia externa dos arquivos. Isso não publica o site, e a restauração em uma nova tarefa ainda precisará ser conferida.
+5. Nas configurações deste ambiente, revise e salve as instruções novas. O instalador inclui também uma restauração local a partir do bundle verificado, guardado fora do checkout. Publique o **ambiente** somente depois de guardar uma cópia externa dos arquivos. Isso não publica o site, e a restauração em uma nova tarefa ainda precisará ser conferida.
 
 ## 2. Abra no seu computador para validar
 
@@ -121,3 +121,7 @@ O ZIP e o bundle são gerados na pasta `p4-entrega` ao lado do projeto. Somente 
 ### Restauração local se aparecer somente o README inicial
 
 O bundle e o manifesto ficam em `/workspace/p4-entrega`. Uma cópia do restaurador fica em `/workspace/shared/p4-consultores/restore-source.sh`. As instruções salvas da nuvem usam esse restaurador quando o código está ausente. Ele verifica SHA-256, exige o commit inicial conhecido e usa Git sem força; havendo alterações ou colisões, interrompe para preservar o trabalho. O procedimento foi ensaiado em checkout descartável, sem modificar o checkout principal. Ainda é necessário conferir a preservação desses arquivos após publicar uma nova versão do ambiente.
+
+## Se a construção falhar no Windows
+
+Para `failed to execute bake` ou `invalid path: /run/secrets/ca_bundle`, siga [WINDOWS-DOCKER.md](WINDOWS-DOCKER.md). A correção mantém certificados padrão no computador local e certificados extras opcionais na nuvem. Não precisa reinstalar o Docker nem apagar dados.

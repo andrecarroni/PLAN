@@ -62,3 +62,9 @@ O novo rascunho da configuração da nuvem deve selecionar o commit reconstruíd
 ### Situação do envio remoto
 
 O push planejado foi recusado pela revisão automática antes de executar: a revisão considerou faltar autorização específica para exportar o código à branch GitHub. Não houve tentativa alternativa de contornar a decisão. Os commits e arquivos de entrega são locais; a branch remota não foi criada por esta entrega. O envio requer autorização específica do usuário. Como proteção adicional, há um restaurador local de bundle verificado que não acessa a rede nem faz reset forçado.
+
+### Atualização: autorização e correção do Docker no Windows
+
+Após autorização explícita do usuário, o commit da reconstrução foi enviado à branch `codex/p4-reconstrucao-20261103` e a referência remota foi conferida. A recusa descrita acima é um registro histórico, não um bloqueio atual.
+
+O log do Windows revelou que o Dockerfile exigia `/run/secrets/ca_bundle` sem que esse secret tivesse sido montado. O Dockerfile agora seleciona certificados extras apenas quando o arquivo existe; caso contrário, usa os certificados públicos padrão, mantendo TLS habilitado. O Compose padrão não referencia arquivos de certificado Linux; a configuração de proxy da nuvem foi separada em `compose.cloud.yaml`. Foram conferidas as configurações padrão, nuvem e produção; o build completo com os certificados da nuvem passou, e a disponibilidade das raízes públicas sem secrets foi verificada em ambas as imagens-base. A execução em Windows será confirmada pelo usuário após atualizar seus arquivos; não houve teste direto em máquina Windows nesta tarefa.

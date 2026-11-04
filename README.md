@@ -2,7 +2,7 @@
 
 Sistema web de planejamento financeiro anual: React/TypeScript, FastAPI, PostgreSQL, migrações Alembic e PDF no servidor. Autenticação real, permissões verificadas na API, salvamento automático com confirmação e controle de conflitos. Sessões abertas não expiram por tempo; a validade anual administrativa do aluno é independente.
 
-Esta é uma **reconstrução** a partir dos anexos preservados. Os arquivos agora estão em commits Git; não dependem somente do snapshot da máquina. A branch planejada para recuperação é `codex/p4-reconstrucao-20261103`; o envio remoto está pendente de autorização específica, conforme `docs/validacao.md`. Consulte a comprovação de preservação e as limitações em `docs/validacao.md`.
+Esta é uma **reconstrução** a partir dos anexos preservados. Os arquivos agora estão em commits Git; não dependem somente do snapshot da máquina. O código está na branch `codex/p4-reconstrucao-20261103` do repositório `andrecarroni/PLAN`, com envio remoto autorizado pelo usuário e confirmado. Consulte a comprovação de preservação e as limitações em `docs/validacao.md`.
 
 ## Início rápido no seu computador
 
@@ -70,3 +70,9 @@ As senhas são aleatórias e aparecem uma vez na saída local do comando. Guarde
 Sem rede, valores não confirmados ficam apenas na memória da página, com aviso ao sair. Não há promessa de armazenamento offline. Nenhuma informação financeira é gravada em localStorage. Conflitos HTTP 409 exigem decisão explícita antes de recarregar; não são sobrescritos silenciosamente.
 
 A logo original foi enviada na conversa, mas não existe como arquivo nos anexos preservados. Há identificação tipográfica temporária. Inclua o arquivo original em `frontend/public/logo.png`; ele será usado na interface e no PDF, sem redesenho. Configure o canal real de suporte e revise os rascunhos antes do piloto.
+
+## Windows e certificados da nuvem
+
+O Compose padrão não requer arquivos de certificados do host. O Dockerfile usa os certificados padrão das imagens; certificados extras são opcionais e não desativam TLS. Para erro `failed to execute bake`, siga [Windows: Docker](docs/WINDOWS-DOCKER.md): construa com `docker build --progress=plain -t p4-consultores:rebuild .` e depois inicie com `docker compose up --no-build --pull never -d`.
+
+Somente para builds neste ambiente gerenciado, use `compose.cloud.yaml` e defina `P4_PROXY_CA`/`P4_CA_BUNDLE`, conforme o guia. Esses arquivos extras não são necessários na instalação normal do Windows.
