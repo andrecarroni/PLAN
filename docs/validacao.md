@@ -86,3 +86,18 @@ A suíte completa passou em **85 testes** no PostgreSQL. O novo `scripts/test_pr
 ### Destaque das orientações no relatório
 
 A seção “Orientações liberadas pela consultoria” foi movida para logo abaixo da identificação do aluno, antes do aviso de preenchimento e dos gráficos. O cartão usa fundo amarelo-claro, borda dourada e título escuro, com contrastes medidos acima de 8:1. A seção antiga no final foi removida. O layout foi conferido no navegador com dados fictícios em 1440 e 390 pixels, verificando posição, ausência de duplicação e de rolagem horizontal. As notas internas continuam filtradas. A compilação TypeScript/React passou; esta alteração é somente na interface do relatório.
+
+### Equipe, conta e comercial — 04/11/2026
+
+O cadastro administrativo da equipe foi separado do cadastro do aluno, com edição de nome/celular/e-mail, controle de conflito e auditoria. O aluno continua com o login no próprio cadastro. A conta agora separa suporte, segurança com botão de troca de senha, cadastro e histórico do acesso. As orientações ficaram compactas na tela e foram movidas para depois do nome no PDF.
+
+O novo módulo comercial inclui dashboard, fila paginada, kanban, agenda em Brasília (45 minutos como padrão), propostas, análise por período/responsável e CSV protegido contra fórmulas. A nova autorização solicitada permite ao vendedor consultar planejamento e orientações públicas por rota dedicada, auditada e sem edição; notas internas e rotas financeiras antigas permanecem restritas. Não há capacidade de pagamento calculada automaticamente, recebimento de valores, envio de convites ou ativação automática por venda.
+
+Validação concluída:
+
+- **113 testes de API passaram** no PostgreSQL isolado, incluindo permissões, conflitos de versão/agenda, propostas, exportação e separação de cadastros. Há um aviso de depreciação da dependência Starlette/AnyIO.
+- Compilação TypeScript/React e construção completa da imagem Docker passaram.
+- `scripts/test_commercial_browser.py` concluiu 11 verificações integradas em banco descartável: equipe, segurança, fila, leitura financeira, proposta, agenda, kanban/venda, CSV, celular, histórico e PDF. Nenhum erro JavaScript foi registrado. Telas conferidas em 1440 e 390 pixels, sem rolagem horizontal na área comercial.
+- Um backup da revisão anterior foi restaurado em banco temporário e atualizado de `0001` para `0002`. Todos os campos e registros das 16 tabelas anteriores foram comparados e preservados. O banco temporário foi removido.
+
+O teste de navegador usou somente contas fictícias; não houve migração do computador Windows do usuário, publicação do site ou envio de mensagens. A atualização local está documentada em `COMERCIAL.md`. Ainda é necessária a conferência humana com a equipe e alunos, além da preparação operacional de produção descrita nas limitações anteriores.

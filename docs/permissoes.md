@@ -6,7 +6,9 @@
 | Editar planejamento | Próprio, acesso ativo | Todos os alunos | Não | Todos |
 | Cadastro e situação do aluno | Próprio | Lista | Lista e pré-cadastro | Todos |
 | Notas internas / atendimento | Não | Sim | Não | Sim |
-| Orientações liberadas | Próprias | Consultar e registrar | Não | Consultar e registrar |
+| Orientações liberadas | Próprias | Consultar e registrar | Consultar no comercial | Consultar e registrar |
+| CRM, agenda e relatórios comerciais | Não | Não | Sim | Sim |
+| Leitura financeira comercial auditada | Não | Não | Sim, sem edição | Sim |
 | Ativar, renovar, bloquear, revogar | Não | Não | Não | Sim |
 | Gerenciar equipe e perfis | Não | Não | Não | Sim |
 | Importar CSV, publicar conteúdo, suporte | Não | Não | Não | Sim |
@@ -14,7 +16,7 @@
 | Auditoria por aluno | Não | Sim | Não | Sim |
 | Auditoria global e exclusão | Não | Não | Não | Sim |
 
-Perfis acumulados usam a união das permissões. Consultores acessam todos os alunos, sem carteiras. Um consultor com perfil aluno mantém os direitos de equipe independentemente do vencimento do acesso como aluno. Vendedor não obtém dados financeiros pela API nem por notas/auditoria/relatórios. A autorização não depende de esconder botões.
+Perfis acumulados usam a união das permissões. Consultores acessam todos os alunos, sem carteiras. Um consultor com perfil aluno mantém os direitos de equipe independentemente do vencimento do acesso como aluno. Conforme nova solicitação, o vendedor pode consultar o planejamento e orientações públicas pela rota comercial dedicada `/api/sales/financial/{id}`, com auditoria. Não recebe notas internas, PDF financeiro nem permissão de editar o planejamento; as rotas financeiras antigas continuam bloqueadas para vendedor. A autorização não depende de esconder botões.
 
 Login com celular persistido em E.164 (`+` e 8 a 15 dígitos), senha de 6 a 200 caracteres e e-mail opcional. Ao informar DDD e número sem prefixo, +55 é incluído automaticamente. Prefixos internacionais explícitos são preservados. O mesmo tratamento é aplicado no cadastro individual, importação CSV, login e comando de administrador; formatação como espaços, parênteses e hífen é removida. Hash scrypt com sal aleatório. Sessões opacas aleatórias, só hash no banco; cookie HttpOnly e SameSite=Lax, Secure em produção. Mutações autenticadas exigem CSRF mantido em memória. Logout, troca/recuperação de senha, mudança de perfis e desativação encerram as sessões correspondentes. Senhas e tokens não são incluídos na auditoria.
 
@@ -39,3 +41,7 @@ Revogar não exclui dados. A exclusão é separada, requer motivo documentado e 
 ## Edição de cadastro de aluno
 
 Somente o administrador pode editar nome, celular e e-mail de alunos em `PUT /api/users/{id}/profile`. A alteração não modifica senha, perfis, situação/validade ou planejamento. Campos adicionais são rejeitados. A operação exige o retrato original dos três campos, compara-o sob bloqueio da linha no banco e rejeita conflitos com HTTP 409. Celular duplicado também é rejeitado sem salvamento parcial. Nome/celular/e-mail anteriores e novos, autor e aluno ficam na auditoria. Trocar o celular encerra as sessões do aluno e invalida códigos de recuperação emitidos anteriormente. A edição não muda o hash da senha.
+
+## Equipe e alunos separados
+
+Alunos são criados em `/api/users`, com perfil aluno e login no próprio cadastro. Integrantes da equipe são criados pelo administrador em `/api/team`, com perfis consultor, vendedor e/ou administrador. A edição de equipe usa `/api/users/{id}/profile?team=true`, com as mesmas proteções de conflito, duplicidade e auditoria da edição de alunos. Contas antigas com perfis acumulados são preservadas e podem aparecer nas duas listas.

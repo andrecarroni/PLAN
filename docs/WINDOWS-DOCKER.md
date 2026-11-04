@@ -55,3 +55,7 @@ No campo celular, informe DDD e número: o +55 será adicionado. Para outro paí
 ## Editar cadastro de aluno
 
 A edição exige atualizar `backend` e `frontend` para a versão atual da branch e reconstruir a imagem, usando o procedimento acima. Depois de atualizar, entre como administrador e acesse **Alunos e atendimentos → Editar cadastro**. O formulário abre acima da lista. Altere nome, celular ou e-mail e clique em **Salvar alterações**. Os dados financeiros e a senha permanecem os mesmos. Ao mudar o celular, a pessoa precisará entrar novamente com o novo número.
+
+## Equipe, conta e módulo comercial
+
+Siga o [guia da atualização comercial](COMERCIAL.md). Esta versão inclui a migração `0002`: faça backup antes de atualizar e aplique a migração antes de iniciar a versão nova.

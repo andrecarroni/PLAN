@@ -108,7 +108,12 @@ function App() {
     api("/auth/me")
       .then((r) => {
         setUser(r.user);
-        if(r.user.roles.includes("vendedor")&&!r.user.roles.includes("administrador")&&!r.user.roles.includes("consultor"))setPage("sales");
+        if (
+          r.user.roles.includes("vendedor") &&
+          !r.user.roles.includes("administrador") &&
+          !r.user.roles.includes("consultor")
+        )
+          setPage("sales");
         setCsrf(r.csrf);
       })
       .catch(() => {})
@@ -142,7 +147,16 @@ function App() {
       <Login
         onLogin={(u) => {
           setUser(u);
-          setPage(u.roles.includes("vendedor")&&!u.roles.includes("administrador")&&!u.roles.includes("consultor")?"sales":"plan");
+          setStudent(null);
+          setDirty(false);
+          setNav(false);
+          setPage(
+            u.roles.includes("vendedor") &&
+              !u.roles.includes("administrador") &&
+              !u.roles.includes("consultor")
+              ? "sales"
+              : "plan",
+          );
         }}
       />
     );
@@ -201,7 +215,14 @@ function App() {
               <Users /> Alunos e atendimentos
             </button>
           )}
-          {(admin||user.roles.includes("vendedor"))&&<button className={page==="sales"?"active":""} onClick={()=>go("sales")}><ChartNoAxesCombined/> Comercial</button>}
+          {(admin || user.roles.includes("vendedor")) && (
+            <button
+              className={page === "sales" ? "active" : ""}
+              onClick={() => go("sales")}
+            >
+              <ChartNoAxesCombined /> Comercial
+            </button>
+          )}
           {admin && (
             <button
               className={page === "admin" ? "active" : ""}
@@ -238,7 +259,9 @@ function App() {
             Minha área <ChevronRight size={14} />{" "}
             {page === "plan"
               ? "Meu planejamento"
-              : page === "report"
+              : page === "sales"
+                ? "Comercial"
+                : page === "report"
                 ? "Meu relatório"
                 : page === "admin"
                   ? "Administração"
@@ -271,6 +294,7 @@ function App() {
                 try {
                   await api("/auth/logout", "POST");
                   setUser(null);
+                  setStudent(null);
                   setDirty(false);
                 } catch (e) {
                   alert((e as Error).message);
@@ -339,7 +363,7 @@ function App() {
             ))}
           {page === "guides" && <Guides />}
           {page === "account" && (
-            <Account user={user} onLogout={() => setUser(null)} />
+            <Account user={user} onLogout={() => {setUser(null);setStudent(null);setDirty(false)}} />
           )}
           {page === "team" && staff && (
             <Team
@@ -351,7 +375,9 @@ function App() {
             />
           )}
           {page === "admin" && admin && <Admin currentUser={user} />}
-          {page === "sales" && (admin||user.roles.includes("vendedor")) && <Sales user={user} onDirty={setDirty}/>}
+          {page === "sales" && (admin || user.roles.includes("vendedor")) && (
+            <Sales user={user} onDirty={setDirty} />
+          )}
         </main>
         <footer>
           <span>© {new Date().getFullYear()} P4 Consultores</span>
@@ -1503,9 +1529,7 @@ function Reports({ sid }: { sid: number }) {
             className="panel report guidance-card"
             aria-labelledby="released-guidance-title"
           >
-            <h2 id="released-guidance-title">
-              Orientações da consultoria
-            </h2>
+            <h2 id="released-guidance-title">Orientações da consultoria</h2>
             {notes.length === 0 ? (
               <p>Nenhuma orientação liberada.</p>
             ) : (
@@ -1757,19 +1781,163 @@ function Guides() {
     </>
   );
 }
-function Account({user,onLogout}:{user:User;onLogout:()=>void}) {
- const [support,setSupport]=useState(""),[history,setHistory]=useState<any[]>([]),[message,setMessage]=useState(""),[old,setOld]=useState(""),[password,setPassword]=useState(""),[showPassword,setShowPassword]=useState(false);
- useEffect(()=>{api("/support").then(r=>setSupport(r.contact)).catch(e=>setMessage(e.message));if(user.roles.includes("aluno"))api<any[]>("/users/"+user.id+"/access-history").then(setHistory).catch(e=>setMessage(e.message))},[user.id]);
- return <><Heading title="Minha conta e ajuda">Seus dados, suporte e segurança, cada um no seu espaço.</Heading>
- <div className="report-grid"><section className="panel report"><h2>Meu cadastro</h2><dl><dt>Nome</dt><dd>{user.name}</dd><dt>Celular de acesso</dt><dd>{user.phone}</dd><dt>E-mail</dt><dd>{user.email||"Não informado"}</dd><dt>Perfis</dt><dd>{user.roles.join(", ")}</dd></dl></section>
- <section className="panel report"><HeartHandshake/><h2>Estamos aqui para ajudar.</h2><p className="preserve">{support}</p><p>Fale com a equipe se precisar de ajuda. Nunca compartilhe sua senha.</p></section></div>
- {user.roles.includes("aluno")&&<section className="panel report"><h2>Meu acesso</h2><p>Situação: <strong>{user.status}</strong> · Válido até {date(user.expires_at)} (Brasília)</p><button className="secondary" onClick={async()=>{try{setMessage((await api("/renewals","POST")).message)}catch(e){setMessage((e as Error).message)}}}>Solicitar renovação</button></section>}
- <section className="panel report"><h2>Segurança da conta</h2><button className="secondary" aria-expanded={showPassword} aria-controls="change-password-form" onClick={()=>setShowPassword(!showPassword)}>{showPassword?"Fechar troca de senha":"Trocar senha"}</button>
- {showPassword&&<form id="change-password-form" onSubmit={async e=>{e.preventDefault();try{await api("/auth/password","POST",{old_password:old,password});onLogout()}catch(e){setMessage((e as Error).message)}}}><label>Senha atual<input type="password" autoComplete="current-password" value={old} onChange={e=>setOld(e.target.value)} required/></label><label>Nova senha<input type="password" autoComplete="new-password" minLength={6} maxLength={200} value={password} onChange={e=>setPassword(e.target.value)} required/><small>6 a 200 caracteres. Você entrará novamente após a troca.</small></label><button className="primary">Salvar nova senha</button></form>}</section>
- {user.roles.includes("aluno")&&<section className="panel report"><h2>Histórico do acesso</h2><details><summary>Consultar liberações e renovações</summary>{history.length?history.map(h=><div className="access-history-card" key={h.id}><strong>{h.action}</strong><p>{date(h.created_at)} · vencimento {date(h.expires_at)}</p></div>):<p>Nenhuma liberação ou renovação registrada.</p>}</details></section>}
- {message&&<p className="notice" role="status">{message}</p>}</>
+function Account({ user, onLogout }: { user: User; onLogout: () => void }) {
+  const [support, setSupport] = useState(""),
+    [history, setHistory] = useState<any[]>([]),
+    [message, setMessage] = useState(""),
+    [old, setOld] = useState(""),
+    [password, setPassword] = useState(""),
+    [showPassword, setShowPassword] = useState(false);
+  useEffect(() => {
+    api("/support")
+      .then((r) => setSupport(r.contact))
+      .catch((e) => setMessage(e.message));
+    if (user.roles.includes("aluno"))
+      api<any[]>("/users/" + user.id + "/access-history")
+        .then(setHistory)
+        .catch((e) => setMessage(e.message));
+  }, [user.id]);
+  return (
+    <>
+      <Heading title="Minha conta e ajuda">
+        Seus dados, suporte e segurança, cada um no seu espaço.
+      </Heading>
+      <div className="report-grid">
+        <section className="panel report">
+          <h2>Meu cadastro</h2>
+          <dl>
+            <dt>Nome</dt>
+            <dd>{user.name}</dd>
+            <dt>Celular de acesso</dt>
+            <dd>{user.phone}</dd>
+            <dt>E-mail</dt>
+            <dd>{user.email || "Não informado"}</dd>
+            <dt>Perfis</dt>
+            <dd>{user.roles.join(", ")}</dd>
+          </dl>
+        </section>
+        <section className="panel report">
+          <HeartHandshake />
+          <h2>Estamos aqui para ajudar.</h2>
+          <p className="preserve">{support}</p>
+          <p>
+            Fale com a equipe se precisar de ajuda. Nunca compartilhe sua senha.
+          </p>
+        </section>
+      </div>
+      {user.roles.includes("aluno") && (
+        <section className="panel report">
+          <h2>Meu acesso</h2>
+          <p>
+            Situação: <strong>{user.status}</strong> · Válido até{" "}
+            {date(user.expires_at)} (Brasília)
+          </p>
+          <button
+            className="secondary"
+            onClick={async () => {
+              try {
+                setMessage((await api("/renewals", "POST")).message);
+              } catch (e) {
+                setMessage((e as Error).message);
+              }
+            }}
+          >
+            Solicitar renovação
+          </button>
+        </section>
+      )}
+      <section className="panel report">
+        <h2>Segurança da conta</h2>
+        <button
+          className="secondary"
+          aria-expanded={showPassword}
+          aria-controls="change-password-form"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "Fechar troca de senha" : "Trocar senha"}
+        </button>
+        {showPassword && (
+          <form
+            id="change-password-form"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                await api("/auth/password", "POST", {
+                  old_password: old,
+                  password,
+                });
+                onLogout();
+              } catch (e) {
+                setMessage((e as Error).message);
+              }
+            }}
+          >
+            <label>
+              Senha atual
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={old}
+                onChange={(e) => setOld(e.target.value)}
+                required
+              />
+            </label>
+            <label>
+              Nova senha
+              <input
+                type="password"
+                autoComplete="new-password"
+                minLength={6}
+                maxLength={200}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <small>
+                6 a 200 caracteres. Você entrará novamente após a troca.
+              </small>
+            </label>
+            <button className="primary">Salvar nova senha</button>
+          </form>
+        )}
+      </section>
+      {user.roles.includes("aluno") && (
+        <section className="panel report">
+          <h2>Histórico do acesso</h2>
+          <details>
+            <summary>Consultar liberações e renovações</summary>
+            {history.length ? (
+              history.map((h) => (
+                <div className="access-history-card" key={h.id}>
+                  <strong>{h.action}</strong>
+                  <p>
+                    {date(h.created_at)} · vencimento {date(h.expires_at)}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>Nenhuma liberação ou renovação registrada.</p>
+            )}
+          </details>
+        </section>
+      )}
+      {message && (
+        <p className="notice" role="status">
+          {message}
+        </p>
+      )}
+    </>
+  );
 }
-function UserForm({ admin, team=false, onDone }: { admin: boolean; team?: boolean; onDone: () => void }) {
+function UserForm({
+  admin,
+  team = false,
+  onDone,
+}: {
+  admin: boolean;
+  team?: boolean;
+  onDone: () => void;
+}) {
   const [form, setForm] = useState({
       name: "",
       phone: "",
@@ -1786,7 +1954,11 @@ function UserForm({ admin, team=false, onDone }: { admin: boolean; team?: boolea
         e.preventDefault();
         setBusy(true);
         try {
-          await api(team ? "/team" : "/users", "POST", { ...form, roles: team ? form.roles : ["aluno"], email: form.email || null });
+          await api(team ? "/team" : "/users", "POST", {
+            ...form,
+            roles: team ? form.roles : ["aluno"],
+            email: form.email || null,
+          });
           onDone();
         } catch (e) {
           setError((e as Error).message);
@@ -1795,8 +1967,12 @@ function UserForm({ admin, team=false, onDone }: { admin: boolean; team?: boolea
         }
       }}
     >
-      <h2>{team?"Novo integrante da equipe":"Novo aluno e seu acesso"}</h2>
-      <p>{team?"Cadastre consultores, vendedores e administradores. A equipe não tem validade anual automática.":"O usuário de acesso é criado junto do aluno e fica pendente até liberação administrativa."}</p>
+      <h2>{team ? "Novo integrante da equipe" : "Novo aluno e seu acesso"}</h2>
+      <p>
+        {team
+          ? "Cadastre consultores, vendedores e administradores. A equipe não tem validade anual automática."
+          : "O usuário de acesso é criado junto do aluno e fica pendente até liberação administrativa."}
+      </p>
       <div className="form-grid">
         {[
           ["name", "Nome completo", "text"],
@@ -2059,13 +2235,46 @@ function Team({ user, onOpen }: { user: User; onOpen: (u: User) => void }) {
     </>
   );
 }
-function StudentAccount({user}:{user:User}) {
- const [message,setMessage]=useState("");
- return <section className="subcard"><h3>Usuário do aluno</h3><p>Celular de acesso: <strong>{user.phone}</strong>. Perfil: aluno. A senha não pode ser visualizada pela equipe.</p><button type="button" className="secondary" onClick={async()=>{if(!confirm("Você verificou a identidade do aluno pelo procedimento administrativo?"))return;try{const r=await api("/users/"+user.id+"/recovery","POST");setMessage(r.message+" Código: "+r.token)}catch(e){setMessage((e as Error).message)}}}>Emitir código de recuperação</button>{message&&<p className="notice" role="status">{message}</p>}</section>
+function StudentAccount({ user }: { user: User }) {
+  const [message, setMessage] = useState("");
+  return (
+    <section className="subcard">
+      <h3>Usuário do aluno</h3>
+      <p>
+        Celular de acesso: <strong>{user.phone}</strong>. Perfil: aluno. A senha
+        não pode ser visualizada pela equipe.
+      </p>
+      <button
+        type="button"
+        className="secondary"
+        onClick={async () => {
+          if (
+            !confirm(
+              "Você verificou a identidade do aluno pelo procedimento administrativo?",
+            )
+          )
+            return;
+          try {
+            const r = await api("/users/" + user.id + "/recovery", "POST");
+            setMessage(r.message + " Código: " + r.token);
+          } catch (e) {
+            setMessage((e as Error).message);
+          }
+        }}
+      >
+        Emitir código de recuperação
+      </button>
+      {message && (
+        <p className="notice" role="status">
+          {message}
+        </p>
+      )}
+    </section>
+  );
 }
 function ProfileEditor({
   user,
-  team=false,
+  team = false,
   onCancel,
   onSaved,
 }: {
@@ -2088,14 +2297,14 @@ function ProfileEditor({
   return (
     <form
       className="panel report"
-      aria-label="Editar cadastro do aluno"
+      aria-label={team ? "Editar cadastro da equipe" : "Editar cadastro do aluno"}
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
         setError("");
         try {
           const updated = await api<User>(
-            "/users/" + user.id + "/profile" + (team?"?team=true":""),
+            "/users/" + user.id + "/profile" + (team ? "?team=true" : ""),
             "PUT",
             { name, phone, email: email || null, original },
           );
@@ -2108,7 +2317,8 @@ function ProfileEditor({
       }}
     >
       <h2 ref={heading} tabIndex={-1}>
-        {team?"Editar integrante da equipe":"Editar cadastro do aluno"} · {user.name}
+        {team ? "Editar integrante da equipe" : "Editar cadastro do aluno"} ·{" "}
+        {user.name}
       </h2>
       <label>
         Nome completo
@@ -2170,7 +2380,7 @@ function ProfileEditor({
           Cancelar
         </button>
       </div>
-      {!team && <StudentAccount user={user}/>}
+      {!team && <StudentAccount user={user} />}
     </form>
   );
 }
@@ -2332,7 +2542,7 @@ function Notes({ student }: { student: User }) {
     </section>
   );
 }
-function Admin({currentUser}:{currentUser:User}) {
+function Admin({ currentUser }: { currentUser: User }) {
   const [tab, setTab] = useState("renewals"),
     [items, setItems] = useState<any[]>([]),
     [error, setError] = useState(""),
@@ -2445,7 +2655,14 @@ function Admin({currentUser}:{currentUser:User}) {
             <h2>Equipe e perfis</h2>
             <UserForm admin team onDone={() => setRev(rev + 1)} />
             {team.items.map((u: User) => (
-              <TeamUser key={u.id} user={u} onDone={() => {if(u.id===currentUser.id)window.location.reload();else setRev(rev + 1)}} />
+              <TeamUser
+                key={u.id}
+                user={u}
+                onDone={() => {
+                  if (u.id === currentUser.id) window.location.reload();
+                  else setRev(rev + 1);
+                }}
+              />
             ))}
             <div className="pagination">
               <span>
@@ -2668,7 +2885,8 @@ function Admin({currentUser}:{currentUser:User}) {
 }
 function TeamUser({ user, onDone }: { user: User; onDone: () => void }) {
   const [roles, setRoles] = useState(user.roles),
-    [message, setMessage] = useState(""),[editing,setEditing]=useState(false);
+    [message, setMessage] = useState(""),
+    [editing, setEditing] = useState(false);
   async function run(fn: () => Promise<any>) {
     try {
       await fn();
@@ -2683,8 +2901,20 @@ function TeamUser({ user, onDone }: { user: User; onDone: () => void }) {
         {user.name} · {user.phone} · {user.roles.join(", ")} ·{" "}
         {user.enabled ? "Conta habilitada" : "Conta desativada"}
       </summary>
-      <button className="secondary" onClick={()=>setEditing(!editing)}>{editing?"Fechar edição":"Editar integrante"}</button>
-      {editing&&<ProfileEditor user={user} team onCancel={()=>setEditing(false)} onSaved={()=>{setEditing(false);onDone()}}/>}
+      <button className="secondary" onClick={() => setEditing(!editing)}>
+        {editing ? "Fechar edição" : "Editar integrante"}
+      </button>
+      {editing && (
+        <ProfileEditor
+          user={user}
+          team
+          onCancel={() => {setEditing(false);onDone()}}
+          onSaved={() => {
+            setEditing(false);
+            onDone();
+          }}
+        />
+      )}
       <fieldset>
         <legend>Perfis da equipe</legend>
         {["consultor", "vendedor", "administrador"].map((r) => (

@@ -1460,17 +1460,168 @@ footer {
 .guidance-card p:last-child {
   margin-bottom: 0;
 }
-.guidance-card{padding:16px 20px}
-.guidance-card h2{font-size:17px;margin-bottom:8px;letter-spacing:0}
-.guidance-card p{font-size:14px;line-height:1.6;margin:6px 0}
-.large .guidance-card h2{font-size:1.05em}
-#change-password-form{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);max-width:600px}
-.access-history-card{padding:12px 0;border-bottom:1px solid var(--line)}
-.access-history-card p{margin:5px 0}
-.sales-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
-.sales-metrics .stat{margin:0}.sales-metrics .stat>strong{font-size:25px}
-.offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:20px 0}.offer-grid>div{padding:20px;background:#f2f6f3;border:1px solid var(--line);border-radius:7px}.offer-grid h3{margin-top:0}.offer-grid strong{font-size:22px}.offer-grid p{margin:8px 0 0}
-.kanban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}.kanban-column{background:#eaf1ee;padding:14px;border-radius:9px;border-top:4px solid #638271;min-width:0}.kanban-column>h2{font-size:16px;line-height:1.5;display:flex;justify-content:space-between;gap:12px}.kanban-column>h2 span{font-size:14px}.kanban-card{padding:17px;border:1px solid var(--line);border-radius:7px;background:white;margin-bottom:14px;overflow-wrap:anywhere}.kanban-card p{font-size:13px;margin:8px 0}.kanban-card label{font-size:13px}.kanban-card select{font-size:14px}.stage-ganho{border-color:#2e744a}.stage-perdido{border-color:#a37054}.stage-negociacao,.stage-proposta{border-color:#a47a32}
-.sales-editor{border:2px solid #9bb6a7;scroll-margin-top:20px}.sales-editor>form{margin-top:24px}.financial-readonly{background:#f8faf8}.financial-readonly .monthly{grid-template-columns:repeat(2,minmax(0,1fr))}.financial-readonly p{overflow-wrap:anywhere}.sales-editor label small{line-height:1.6}
-@media(max-width:1100px){.kanban{grid-template-columns:repeat(2,minmax(0,1fr))}.offer-grid{grid-template-columns:1fr}.sales-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.sales-metrics,.kanban,.financial-readonly .monthly{grid-template-columns:1fr}.sales-metrics .stat>strong{font-size:24px}.sales-editor{padding:20px 15px}.offer-grid>div{padding:16px}.kanban-column{padding:12px}.sales-editor .subcard{padding:15px}}
+.guidance-card {
+  padding: 16px 20px;
+}
+.guidance-card h2 {
+  font-size: 17px;
+  margin-bottom: 8px;
+  letter-spacing: 0;
+}
+.guidance-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 6px 0;
+}
+.large .guidance-card h2 {
+  font-size: 1.05em;
+}
+#change-password-form {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  max-width: 600px;
+}
+.access-history-card {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.access-history-card p {
+  margin: 5px 0;
+}
+.sales-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+.sales-metrics .stat {
+  margin: 0;
+}
+.sales-metrics .stat > strong {
+  font-size: 25px;
+}
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.offer-grid > div {
+  padding: 20px;
+  background: #f2f6f3;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+.offer-grid h3 {
+  margin-top: 0;
+}
+.offer-grid strong {
+  font-size: 22px;
+}
+.offer-grid p {
+  margin: 8px 0 0;
+}
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.kanban-column {
+  background: #eaf1ee;
+  padding: 14px;
+  border-radius: 9px;
+  border-top: 4px solid #638271;
+  min-width: 0;
+}
+.kanban-column > h2 {
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.kanban-column > h2 span {
+  font-size: 14px;
+}
+.kanban-card {
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  margin-bottom: 14px;
+  overflow-wrap: anywhere;
+}
+.kanban-card p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.kanban-card label {
+  font-size: 13px;
+}
+.kanban-card select {
+  font-size: 14px;
+}
+.stage-ganho {
+  border-color: #2e744a;
+}
+.stage-perdido {
+  border-color: #a37054;
+}
+.stage-negociacao,
+.stage-proposta {
+  border-color: #a47a32;
+}
+.sales-editor {
+  border: 2px solid #9bb6a7;
+  scroll-margin-top: 20px;
+}
+.sales-editor > form {
+  margin-top: 24px;
+}
+.financial-readonly {
+  background: #f8faf8;
+}
+.financial-readonly .monthly {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.financial-readonly p {
+  overflow-wrap: anywhere;
+}
+.sales-editor label small {
+  line-height: 1.6;
+}
+@media (max-width: 1100px) {
+  .kanban {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .offer-grid {
+    grid-template-columns: 1fr;
+  }
+  .sales-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .sales-metrics,
+  .kanban,
+  .financial-readonly .monthly {
+    grid-template-columns: 1fr;
+  }
+  .sales-metrics .stat > strong {
+    font-size: 24px;
+  }
+  .sales-editor {
+    padding: 20px 15px;
+  }
+  .offer-grid > div {
+    padding: 16px;
+  }
+  .kanban-column {
+    padding: 12px;
+  }
+  .sales-editor .subcard {
+    padding: 15px;
+  }
+}

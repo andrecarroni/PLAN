@@ -52,8 +52,10 @@ def generate(student, report, details, notes):
     text(student.name, "Heading2")
     text("Orientações da consultoria", "Heading3")
     if notes:
-        for x in notes:text(x.text)
-    else:text("Nenhuma orientação liberada.")
+        for x in notes:
+            text(x.text)
+    else:
+        text("Nenhuma orientação liberada.")
 
     text(
         "Gerado em "
