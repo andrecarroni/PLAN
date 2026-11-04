@@ -23,8 +23,8 @@ def digest(s):
 
 
 def hash_password(s):
-    if not 12 <= len(s) <= 200:
-        raise ValueError("Use uma senha de 12 a 200 caracteres.")
+    if not 6 <= len(s) <= 200:
+        raise ValueError("Use uma senha de 6 a 200 caracteres.")
     salt = secrets.token_hex(16)
     return (
         salt

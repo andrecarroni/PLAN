@@ -39,7 +39,7 @@ O código foi reconstruído porque o checkout restaurado tinha apenas o README i
    docker compose exec web python -m app.cli create-admin
    ```
 
-   Informe nome, celular com `+`, código do país e DDD (sem espaços), e uma senha de 12 a 200 caracteres. A senha não aparece enquanto você digita. Não existe senha padrão de produção.
+   Informe nome, celular com DDD (+55 é acrescentado automaticamente para Brasil), e uma senha de 6 a 200 caracteres. Para outro país, informe `+` e o código internacional. A senha não aparece enquanto você digita. Não existe senha padrão de produção.
 
 8. Prepare os conteúdos em rascunho:
 

@@ -33,7 +33,7 @@ with sync_playwright() as pw:
 
     def login(role):
         page.goto(BASE)
-        page.get_by_label("Celular com código do país").fill(credentials[role][0])
+        page.get_by_label("Celular com DDD").fill(credentials[role][0])
         page.get_by_label("Senha", exact=True).fill(credentials[role][1])
         page.get_by_role("button", name="Entrar na minha conta").click()
         expect(page.get_by_role("button", name="Sair da conta")).to_be_visible()

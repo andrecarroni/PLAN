@@ -427,16 +427,18 @@ function Login({ onLogin }: { onLogin: (u: User) => void }) {
             </label>
           ) : (
             <label>
-              Celular com código do país
+              Celular com DDD
               <input
                 type="tel"
                 autoComplete="username"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+5511999999999"
+                placeholder="(11) 99999-9999"
                 required
               />
-              <small>Inclua +, país e DDD, sem espaços.</small>
+              <small>
+                Brasil: +55 automático. Para outro país, digite + e o código.
+              </small>
             </label>
           )}
           <label>
@@ -446,7 +448,7 @@ function Login({ onLogin }: { onLogin: (u: User) => void }) {
                 type={show ? "text" : "password"}
                 autoComplete={reset ? "new-password" : "current-password"}
                 value={password}
-                minLength={reset ? 12 : undefined}
+                minLength={reset ? 6 : undefined}
                 maxLength={200}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -1846,14 +1848,14 @@ function Account({ user, onLogout }: { user: User; onLogout: () => void }) {
               <input
                 type="password"
                 autoComplete="new-password"
-                minLength={12}
+                minLength={6}
                 maxLength={200}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <small>
-                12 a 200 caracteres. Você entrará novamente depois da troca.
+                6 a 200 caracteres. Você entrará novamente depois da troca.
               </small>
             </label>
             <button className="secondary">Alterar senha</button>
@@ -1899,9 +1901,9 @@ function UserForm({ admin, onDone }: { admin: boolean; onDone: () => void }) {
       <div className="form-grid">
         {[
           ["name", "Nome completo", "text"],
-          ["phone", "Celular internacional", "tel"],
+          ["phone", "Celular com DDD (+55 automático)", "tel"],
           ["email", "E-mail, opcional", "email"],
-          ["password", "Senha inicial (12 a 200 caracteres)", "password"],
+          ["password", "Senha inicial (6 a 200 caracteres)", "password"],
         ].map(([key, label, type]) => (
           <label key={key}>
             {label}
@@ -1910,10 +1912,15 @@ function UserForm({ admin, onDone }: { admin: boolean; onDone: () => void }) {
               value={form[key as "name"]}
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}
               required={key !== "email"}
-              minLength={key === "password" ? 12 : undefined}
+              minLength={key === "password" ? 6 : undefined}
               maxLength={key === "password" ? 200 : undefined}
               autoComplete={key === "password" ? "new-password" : undefined}
             />
+            {key === "phone" && (
+              <small>
+                Brasil: +55 automático. Para outro país, digite + e o código.
+              </small>
+            )}
           </label>
         ))}
       </div>

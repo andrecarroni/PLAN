@@ -1,5 +1,6 @@
 import argparse, getpass, secrets, os
 from sqlalchemy import select
+from pydantic import ValidationError
 from .db import SessionLocal
 from .models import User, Category, Content, ContentVersion
 from .schemas import UserInput
@@ -14,19 +15,27 @@ def main():
     with SessionLocal() as db:
         if args.command == "create-admin":
             name = input("Nome completo: ")
-            phone = input("Celular internacional: ")
-            password = getpass.getpass("Senha (12 a 200 caracteres): ")
+            phone = input("Celular com DDD (+55 automático; outro país: +código): ")
+            password = getpass.getpass("Senha (6 a 200 caracteres): ")
             if password != getpass.getpass("Confirme a senha: "):
                 raise SystemExit("Senhas diferentes.")
             try:
                 data = UserInput(
                     name=name, phone=phone, password=password, roles=["administrador"]
                 )
-            except ValueError:
+            except ValidationError as exc:
+                messages = {
+                    "name": "Informe um nome com pelo menos 2 caracteres.",
+                    "phone": "Informe DDD e número para Brasil (+55 automático). Para outro país, informe + e o código do país.",
+                    "password": "Use uma senha de 6 a 200 caracteres; números também são aceitos.",
+                }
+                fields = list(dict.fromkeys(str(e["loc"][0]) for e in exc.errors()))
                 raise SystemExit(
-                    "Confira nome, celular internacional e tamanho da senha."
+                    " ".join(
+                        messages.get(field, "Confira o cadastro.") for field in fields
+                    )
                 ) from None
-            if db.scalar(select(User).where(User.phone == phone)):
+            if db.scalar(select(User).where(User.phone == data.phone)):
                 raise SystemExit("Celular já cadastrado.")
             u = User(
                 name=data.name,
@@ -125,7 +134,7 @@ def main():
                 ("consultor", "+5511999990004", "Consultor fictício"),
                 ("vendedor", "+5511999990005", "Vendedor fictício"),
             ]:
-                if db.scalar(select(User).where(User.phone == phone)):
+                if db.scalar(select(User).where(User.phone == data.phone)):
                     continue
                 password = secrets.token_urlsafe(18)
                 u = User(

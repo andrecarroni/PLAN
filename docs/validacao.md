@@ -68,3 +68,11 @@ O push planejado foi recusado pela revisão automática antes de executar: a rev
 Após autorização explícita do usuário, o commit da reconstrução foi enviado à branch `codex/p4-reconstrucao-20261103` e a referência remota foi conferida. A recusa descrita acima é um registro histórico, não um bloqueio atual.
 
 O log do Windows revelou que o Dockerfile exigia `/run/secrets/ca_bundle` sem que esse secret tivesse sido montado. O Dockerfile agora seleciona certificados extras apenas quando o arquivo existe; caso contrário, usa os certificados públicos padrão, mantendo TLS habilitado. O Compose padrão não referencia arquivos de certificado Linux; a configuração de proxy da nuvem foi separada em `compose.cloud.yaml`. Foram conferidas as configurações padrão, nuvem e produção; o build completo com os certificados da nuvem passou, e a disponibilidade das raízes públicas sem secrets foi verificada em ambas as imagens-base. A execução em Windows será confirmada pelo usuário após atualizar seus arquivos; não houve teste direto em máquina Windows nesta tarefa.
+
+### Atualização 04/11/2026: senha de 6 caracteres e Brasil como padrão
+
+A pedido do usuário, a senha mínima passou de 12 para 6 caracteres, inclusive somente números, mantendo máximo de 200, hash scrypt e limite de tentativas. A regra é compartilhada pelo cadastro, troca, recuperação e comando de administrador e refletida na interface. Senhas existentes continuam válidas.
+
+DDD + número, sem prefixo internacional, recebe +55 automaticamente. Número já iniciado com 55 e comprimento completo recebe somente o sinal +. Países explicitamente informados com + são preservados, e a formatação habitual (espaços, parênteses, hífen) é removida. O mesmo normalizador é usado em cadastro individual, importação CSV, login e CLI, evitando duplicidades entre versões formatadas e internacionais do mesmo número. O administrador passa a receber mensagens específicas por campo, sem mostrar a senha.
+
+A suíte completa no PostgreSQL passou em **72 testes**, incluindo limites de senha, login/troca/recuperação com seis dígitos, criação de administrador com DDD nacional, países estrangeiros e duplicidades após normalização. A compilação React/TypeScript também passou. A aplicação instalada no Windows precisa ser reconstruída após atualizar as pastas backend/frontend.

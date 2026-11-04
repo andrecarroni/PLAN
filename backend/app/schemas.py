@@ -3,6 +3,7 @@ from typing import Literal
 from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from .finance import money, months, CODES
+from .phones import normalize_phone
 
 Role = Literal["aluno", "consultor", "vendedor", "administrador"]
 
@@ -12,23 +13,26 @@ class Strict(BaseModel):
 
 
 class Login(Strict):
-    phone: str = Field(max_length=20)
+    phone: str = Field(max_length=40)
     password: str = Field(max_length=200)
+
+    @field_validator("phone")
+    @classmethod
+    def phone_valid(cls, v):
+        return normalize_phone(v)
 
 
 class UserInput(Strict):
     name: str = Field(min_length=2, max_length=160)
-    phone: str
+    phone: str = Field(max_length=40)
     email: str | None = Field(default=None, max_length=254)
-    password: str = Field(min_length=12, max_length=200)
+    password: str = Field(min_length=6, max_length=200)
     roles: list[Role] = Field(default=["aluno"], min_length=1, max_length=4)
 
     @field_validator("phone")
     @classmethod
     def phone_valid(cls, v):
-        if not re.fullmatch(r"\+[1-9]\d{7,14}", v):
-            raise ValueError("Use +, código do país e DDD, sem espaços.")
-        return v
+        return normalize_phone(v)
 
     @field_validator("email")
     @classmethod
@@ -53,12 +57,12 @@ class Access(Strict):
 
 class Password(Strict):
     old_password: str = Field(max_length=200)
-    password: str = Field(min_length=12, max_length=200)
+    password: str = Field(min_length=6, max_length=200)
 
 
 class ResetInput(Strict):
     token: str = Field(max_length=100)
-    password: str = Field(min_length=12, max_length=200)
+    password: str = Field(min_length=6, max_length=200)
 
 
 class EntryInput(Strict):

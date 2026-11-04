@@ -37,3 +37,17 @@ P4_PROXY_CA="$CODEX_PROXY_CERT" P4_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt 
 ```
 
 Isso mantém a confiança do proxy configurada sem obrigar computadores Windows a possuir caminhos de certificados Linux. Não use `--insecure`, `--trusted-host` ou `strict-ssl=false`.
+
+## Atualização de senha e telefone
+
+Para aplicar a senha mínima de 6 caracteres e +55 automático, baixe novamente o ZIP da branch e extraia-o. Da pasta nova, copie somente `backend` e `frontend` para a pasta atual do projeto, substituindo os arquivos correspondentes. Preserve seu `.env` e seu Dockerfile local já corrigido.
+
+Na pasta atual, execute, aguardando cada comando terminar com sucesso:
+
+```powershell
+docker build --progress=plain -t p4-consultores:rebuild .
+docker compose up --no-build --pull never -d
+docker compose exec web python -m app.cli create-admin
+```
+
+No campo celular, informe DDD e número: o +55 será adicionado. Para outro país, informe + e o código correspondente. A senha pode ter somente números e precisa ter entre 6 e 200 caracteres. O comando de atualização preserva o banco; não apague volumes.
