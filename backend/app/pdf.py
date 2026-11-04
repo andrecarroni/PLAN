@@ -50,6 +50,11 @@ def generate(student, report, details, notes):
         story.append(Image(str(logo), width=250, height=250 * h / w))
     text("P4 Consultores · Planejamento financeiro", "Title")
     text(student.name, "Heading2")
+    text("Orientações da consultoria", "Heading3")
+    if notes:
+        for x in notes:text(x.text)
+    else:text("Nenhuma orientação liberada.")
+
     text(
         "Gerado em "
         + now().astimezone(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y %H:%M")
@@ -198,9 +203,6 @@ def generate(student, report, details, notes):
         text(
             f"{x['title']} · {brl(x['amount'])} · prazo {x['deadline'] or 'não informado'}. {x['negotiation']}"
         )
-    text("Orientações liberadas", "Heading2")
-    for x in notes:
-        text(x.text)
     text(
         "Modo do cartão: "
         + report["card_mode"]

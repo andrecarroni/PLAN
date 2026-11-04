@@ -207,6 +207,7 @@ def users(
     stmt = select(User)
     if team:
         require(u, "administrador")
+        stmt = stmt.where(or_(*(cast(User.roles, String).like('%"'+r+'"%') for r in ('consultor','vendedor','administrador'))))
     else:
         stmt = stmt.where(cast(User.roles, String).like('%"aluno"%'))
     if q:
@@ -256,6 +257,8 @@ def create_user(data: UserInput, u=Depends(current), db=Depends(db_session)):
     require(u, "vendedor", "administrador")
     if "administrador" not in u.roles and data.roles != ["aluno"]:
         raise HTTPException(403, "Vendedor pode apenas pré-cadastrar alunos.")
+    if data.roles != ["aluno"]:
+        raise HTTPException(422, "Cadastre integrantes da equipe na área Equipe e perfis.")
     item = data.model_dump(exclude={"password"})
     item["roles"] = sorted(set(data.roles))
     target = User(**item, password_hash=hash_password(data.password), status="pendente")
@@ -270,9 +273,22 @@ def create_user(data: UserInput, u=Depends(current), db=Depends(db_session)):
     return public(target)
 
 
+@app.post("/api/team", status_code=201)
+def create_team(data: UserInput, u=Depends(current), db=Depends(db_session)):
+    require(u, "administrador")
+    if not set(data.roles) or not set(data.roles) <= {"consultor","vendedor","administrador"}:
+        raise HTTPException(422, "Selecione somente perfis da equipe.")
+    target=User(**data.model_dump(exclude={"password"}),password_hash=hash_password(data.password),status="pendente")
+    db.add(target)
+    try:db.flush()
+    except IntegrityError:
+        db.rollback();raise HTTPException(409,"Celular já cadastrado em outra conta.")
+    audit(db,u,target.id,"team_created",{"roles":target.roles});db.commit();return public(target)
+
+
 @app.put("/api/users/{sid}/profile")
 def edit_profile(
-    sid: int, data: ProfileUpdate, u=Depends(current), db=Depends(db_session)
+    sid: int, data: ProfileUpdate, team: bool = False, u=Depends(current), db=Depends(db_session)
 ):
     require(u, "administrador")
     target = db.scalar(
@@ -281,8 +297,9 @@ def edit_profile(
         .with_for_update()
         .execution_options(populate_existing=True)
     )
-    if not target or "aluno" not in target.roles:
-        raise HTTPException(404, "Aluno não encontrado.")
+    expected = {"consultor", "vendedor", "administrador"} if team else {"aluno"}
+    if not target or not set(target.roles) & expected:
+        raise HTTPException(404, "Integrante da equipe não encontrado." if team else "Aluno não encontrado.")
     before = {field: getattr(target, field) for field in ("name", "phone", "email")}
     if before != data.original.model_dump():
         raise HTTPException(
@@ -574,7 +591,7 @@ def audit_list(
 def content_list(all: bool = False, u=Depends(current), db=Depends(db_session)):
     if all:
         require(u, "administrador")
-    elif not set(u.roles) & {"consultor", "administrador"}:
+    elif not set(u.roles) & {"consultor", "administrador", "vendedor"}:
         financial(db, u, u.id)
     stmt = select(Content)
     if not all:
@@ -739,6 +756,9 @@ def delete_user(
     db.commit()
     return {"ok": True}
 
+
+from .sales import router as sales_router
+app.include_router(sales_router)
 
 DIST = Path(
     os.getenv(

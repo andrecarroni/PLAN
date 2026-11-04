@@ -209,3 +209,35 @@ class Setting(Base):
     __tablename__ = "settings"
     key: Mapped[str] = mapped_column(String(80), primary_key=True)
     value: Mapped[str] = mapped_column(Text)
+
+class Opportunity(Base):
+    __tablename__ = 'sales_opportunities'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey('users.id',ondelete='CASCADE'),unique=True,index=True)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey('users.id',ondelete='SET NULL'),nullable=True,index=True)
+    stage: Mapped[str] = mapped_column(String(24),default='aguardando',index=True)
+    cash_price: Mapped[Decimal] = mapped_column(Numeric(16,2),default=Decimal('5000.00'))
+    installment_count: Mapped[int] = mapped_column(Integer,default=12)
+    installment_value: Mapped[Decimal] = mapped_column(Numeric(16,2),default=Decimal('497.00'))
+    selected_offer: Mapped[str | None] = mapped_column(String(20),nullable=True)
+    next_contact: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True,index=True)
+    notes: Mapped[str] = mapped_column(Text,default='')
+    lost_reason: Mapped[str] = mapped_column(Text,default='')
+    version: Mapped[int] = mapped_column(Integer,default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now,index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now)
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True,index=True)
+
+class Appointment(Base):
+    __tablename__ = 'sales_appointments'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    opportunity_id: Mapped[int] = mapped_column(ForeignKey('sales_opportunities.id',ondelete='CASCADE'),index=True)
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey('users.id',ondelete='SET NULL'),nullable=True,index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),index=True)
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),index=True)
+    duration_minutes: Mapped[int] = mapped_column(Integer,default=45)
+    status: Mapped[str] = mapped_column(String(20),default='agendada',index=True)
+    meeting_url: Mapped[str] = mapped_column(String(500),default='')
+    notes: Mapped[str] = mapped_column(Text,default='')
+    version: Mapped[int] = mapped_column(Integer,default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now)
