@@ -1495,6 +1495,23 @@ function Reports({ sid }: { sid: number }) {
             {r.student.name} · Gerado em {date(r.generated_at)} · Valores{" "}
             {mode === "forecast" ? "previstos" : "realizados"}
           </p>
+          <section
+            className="panel report guidance-card"
+            aria-labelledby="released-guidance-title"
+          >
+            <h2 id="released-guidance-title">
+              Orientações liberadas pela consultoria
+            </h2>
+            {notes.length === 0 ? (
+              <p>Nenhuma orientação liberada.</p>
+            ) : (
+              notes.map((n) => (
+                <p className="preserve" key={n.id}>
+                  {n.text}
+                </p>
+              ))
+            )}
+          </section>
           {r.incomplete && (
             <p className="notice">
               Preenchimento incompleto. Os resultados são parciais e consideram
@@ -1685,16 +1702,6 @@ function Reports({ sid }: { sid: number }) {
                   {g.negotiation}
                 </p>
               ))}
-              <h3>Orientações liberadas pela consultoria</h3>
-              {notes.length === 0 ? (
-                <p>Nenhuma orientação liberada.</p>
-              ) : (
-                notes.map((n) => (
-                  <p className="preserve" key={n.id}>
-                    {n.text}
-                  </p>
-                ))
-              )}
             </section>
           )}
         </>

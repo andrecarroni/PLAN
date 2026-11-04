@@ -1434,4 +1434,29 @@ footer {
   }
 }
 
-.welcome>span{width:150px;height:150px;border:35px solid #d7e7da;border-radius:50%;top:-45px;right:20px;pointer-events:none}
+.welcome > span {
+  width: 150px;
+  height: 150px;
+  border: 35px solid #d7e7da;
+  border-radius: 50%;
+  top: -45px;
+  right: 20px;
+  pointer-events: none;
+}
+
+/* Published consultation guidance is prominent immediately below the student identity. */
+.guidance-card {
+  background: #fff8e9;
+  border-color: #dbc18b;
+  border-left: 5px solid #a87925;
+}
+.guidance-card h2 {
+  color: #604719;
+  margin-bottom: 14px;
+}
+.guidance-card p {
+  color: #554322;
+}
+.guidance-card p:last-child {
+  margin-bottom: 0;
+}
