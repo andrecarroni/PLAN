@@ -1966,6 +1966,8 @@ function Team({ user, onOpen }: { user: User; onOpen: (u: User) => void }) {
     [error, setError] = useState(""),
     [rev, setRev] = useState(0),
     [create, setCreate] = useState(false),
+    [editing, setEditing] = useState<User | null>(null),
+    [savedMessage, setSavedMessage] = useState(""),
     [student, setStudent] = useState<User | null>(null);
   const finance = user.roles.some((r) =>
       ["consultor", "administrador"].includes(r),
@@ -2018,6 +2020,28 @@ function Team({ user, onOpen }: { user: User; onOpen: (u: User) => void }) {
         <p className="error" role="alert">
           {error}
         </p>
+      )}
+      {savedMessage && (
+        <p className="notice" role="status">
+          {savedMessage}
+        </p>
+      )}
+      {editing && (
+        <ProfileEditor
+          key={editing.id}
+          user={editing}
+          onCancel={() => {
+            setEditing(null);
+            setRev((v) => v + 1);
+          }}
+          onSaved={(updated) => {
+            setEditing(null);
+            setSavedMessage("Cadastro atualizado com sucesso.");
+            setRev((v) => v + 1);
+            if (updated.id === user.id && updated.phone !== user.phone)
+              window.location.reload();
+          }}
+        />
       )}
       <section className="panel report">
         <div className="filters">
@@ -2095,6 +2119,17 @@ function Team({ user, onOpen }: { user: User; onOpen: (u: User) => void }) {
                 </>
               )}
               {admin && (
+                <button
+                  className="secondary"
+                  onClick={() => {
+                    setSavedMessage("");
+                    setEditing(s);
+                  }}
+                >
+                  Editar cadastro
+                </button>
+              )}
+              {admin && (
                 <AccessControl student={s} onDone={() => setRev(rev + 1)} />
               )}
             </div>
@@ -2123,6 +2158,114 @@ function Team({ user, onOpen }: { user: User; onOpen: (u: User) => void }) {
       </section>
       {student && <Notes key={student.id} student={student} />}
     </>
+  );
+}
+function ProfileEditor({
+  user,
+  onCancel,
+  onSaved,
+}: {
+  user: User;
+  onCancel: () => void;
+  onSaved: (user: User) => void;
+}) {
+  const original = { name: user.name, phone: user.phone, email: user.email };
+  const [name, setName] = useState(user.name),
+    [phone, setPhone] = useState(user.phone),
+    [email, setEmail] = useState(user.email ?? ""),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    heading.current?.focus();
+    heading.current?.scrollIntoView({ block: "start" });
+  }, []);
+  return (
+    <form
+      className="panel report"
+      aria-label="Editar cadastro do aluno"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        setError("");
+        try {
+          const updated = await api<User>(
+            "/users/" + user.id + "/profile",
+            "PUT",
+            { name, phone, email: email || null, original },
+          );
+          onSaved(updated);
+        } catch (e) {
+          setError((e as Error).message);
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <h2 ref={heading} tabIndex={-1}>
+        Editar cadastro · {user.name}
+      </h2>
+      <label>
+        Nome completo
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          minLength={2}
+          maxLength={160}
+        />
+      </label>
+      <label>
+        Celular com DDD
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+          maxLength={40}
+        />
+        <small>
+          Brasil: +55 automático. Para outro país, digite + e o código. Ao
+          alterar o celular de acesso, as sessões dessa pessoa serão encerradas.
+        </small>
+      </label>
+      <label>
+        E-mail, opcional
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          maxLength={254}
+        />
+      </label>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="actions">
+        <button className="primary" disabled={busy}>
+          {busy ? "Salvando…" : "Salvar alterações"}
+        </button>
+        <button
+          type="button"
+          className="secondary"
+          disabled={busy}
+          onClick={() => {
+            if (
+              name !== user.name ||
+              phone !== user.phone ||
+              email !== (user.email ?? "")
+            ) {
+              if (!confirm("Descartar as alterações deste cadastro?")) return;
+            }
+            onCancel();
+          }}
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
   );
 }
 function AccessControl({

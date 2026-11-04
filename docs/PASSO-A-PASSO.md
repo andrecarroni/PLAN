@@ -125,3 +125,13 @@ O bundle e o manifesto ficam em `/workspace/p4-entrega`. Uma cópia do restaurad
 ## Se a construção falhar no Windows
 
 Para `failed to execute bake` ou `invalid path: /run/secrets/ca_bundle`, siga [WINDOWS-DOCKER.md](WINDOWS-DOCKER.md). A correção mantém certificados padrão no computador local e certificados extras opcionais na nuvem. Não precisa reinstalar o Docker nem apagar dados.
+
+## Editar o cadastro de um aluno
+
+1. Entre como administrador e abra **Alunos e atendimentos**.
+2. Busque o aluno e clique em **Editar cadastro**, na linha dele.
+3. O formulário será aberto acima da lista. Altere nome, celular com DDD ou e-mail e clique em **Salvar alterações**.
+4. Aguarde a mensagem de sucesso. Se houver erro de conexão, os campos permanecem na tela para tentar novamente. Celular já utilizado por outra pessoa é rejeitado; uma edição simultânea também é rejeitada.
+5. Se mudar o celular, informe ao aluno que deve entrar novamente usando o novo número; a senha permanece a mesma.
+
+Para instalar essa melhoria na versão Windows já em uso, baixe o ZIP atualizado da branch e copie somente as pastas `backend` e `frontend` sobre as correspondentes da instalação atual, substituindo os arquivos. Preserve `.env` e o Dockerfile local. Execute `docker build --progress=plain -t p4-consultores:rebuild .`, aguarde sucesso e depois `docker compose up --no-build --pull never -d`. Atualize a página do navegador. A atualização não exige criar contas novamente nem modificar o banco.

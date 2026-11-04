@@ -270,6 +270,46 @@ def create_user(data: UserInput, u=Depends(current), db=Depends(db_session)):
     return public(target)
 
 
+@app.put("/api/users/{sid}/profile")
+def edit_profile(
+    sid: int, data: ProfileUpdate, u=Depends(current), db=Depends(db_session)
+):
+    require(u, "administrador")
+    target = db.scalar(
+        select(User)
+        .where(User.id == sid)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if not target or "aluno" not in target.roles:
+        raise HTTPException(404, "Aluno não encontrado.")
+    before = {field: getattr(target, field) for field in ("name", "phone", "email")}
+    if before != data.original.model_dump():
+        raise HTTPException(
+            409,
+            "Este cadastro foi alterado por outra pessoa. Seus valores continuam na tela. Cancele e abra o cadastro novamente para carregar os dados atuais.",
+        )
+    after = data.model_dump(exclude={"original"})
+    if after == before:
+        return public(target)
+    for field, value in after.items():
+        setattr(target, field, value)
+    try:
+        db.flush()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            409,
+            "Este celular já pertence a outra conta. Confira o número e tente novamente.",
+        )
+    if before["phone"] != after["phone"]:
+        invalidate(db, sid)
+        db.execute(delete(Reset).where(Reset.user_id == sid))
+    audit(db, u, sid, "profile_changed", {"before": before, "after": after})
+    db.commit()
+    return public(target)
+
+
 @app.put("/api/users/{sid}/roles")
 def roles(sid: int, data: Roles, u=Depends(current), db=Depends(db_session)):
     require(u, "administrador")

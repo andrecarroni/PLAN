@@ -134,7 +134,7 @@ def main():
                 ("consultor", "+5511999990004", "Consultor fictício"),
                 ("vendedor", "+5511999990005", "Vendedor fictício"),
             ]:
-                if db.scalar(select(User).where(User.phone == data.phone)):
+                if db.scalar(select(User).where(User.phone == phone)):
                     continue
                 password = secrets.token_urlsafe(18)
                 u = User(

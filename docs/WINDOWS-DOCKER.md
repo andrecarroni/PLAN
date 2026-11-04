@@ -51,3 +51,7 @@ docker compose exec web python -m app.cli create-admin
 ```
 
 No campo celular, informe DDD e número: o +55 será adicionado. Para outro país, informe + e o código correspondente. A senha pode ter somente números e precisa ter entre 6 e 200 caracteres. O comando de atualização preserva o banco; não apague volumes.
+
+## Editar cadastro de aluno
+
+A edição exige atualizar `backend` e `frontend` para a versão atual da branch e reconstruir a imagem, usando o procedimento acima. Depois de atualizar, entre como administrador e acesse **Alunos e atendimentos → Editar cadastro**. O formulário abre acima da lista. Altere nome, celular ou e-mail e clique em **Salvar alterações**. Os dados financeiros e a senha permanecem os mesmos. Ao mudar o celular, a pessoa precisará entrar novamente com o novo número.

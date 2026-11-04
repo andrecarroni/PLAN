@@ -35,3 +35,7 @@ Toda operação financeira verifica estado e vencimento no servidor, inclusive c
 A equipe não tem validade anual automática. Administrador pode desativar uma conta inteira, impedindo login e encerrando sessões, e reativá-la posteriormente. Não pode remover seu próprio perfil administrativo, desativar ou excluir sua própria conta.
 
 Revogar não exclui dados. A exclusão é separada, requer motivo documentado e confirmação textual `EXCLUIR +CELULAR`. O processo de retenção e exclusão está em `operacao.md`.
+
+## Edição de cadastro de aluno
+
+Somente o administrador pode editar nome, celular e e-mail de alunos em `PUT /api/users/{id}/profile`. A alteração não modifica senha, perfis, situação/validade ou planejamento. Campos adicionais são rejeitados. A operação exige o retrato original dos três campos, compara-o sob bloqueio da linha no banco e rejeita conflitos com HTTP 409. Celular duplicado também é rejeitado sem salvamento parcial. Nome/celular/e-mail anteriores e novos, autor e aluno ficam na auditoria. Trocar o celular encerra as sessões do aluno e invalida códigos de recuperação emitidos anteriormente. A edição não muda o hash da senha.

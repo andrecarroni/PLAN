@@ -22,12 +22,10 @@ class Login(Strict):
         return normalize_phone(v)
 
 
-class UserInput(Strict):
+class ProfileFields(Strict):
     name: str = Field(min_length=2, max_length=160)
     phone: str = Field(max_length=40)
     email: str | None = Field(default=None, max_length=254)
-    password: str = Field(min_length=6, max_length=200)
-    roles: list[Role] = Field(default=["aluno"], min_length=1, max_length=4)
 
     @field_validator("phone")
     @classmethod
@@ -40,6 +38,15 @@ class UserInput(Strict):
         if v and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", v):
             raise ValueError("E-mail inválido.")
         return v or None
+
+
+class UserInput(ProfileFields):
+    password: str = Field(min_length=6, max_length=200)
+    roles: list[Role] = Field(default=["aluno"], min_length=1, max_length=4)
+
+
+class ProfileUpdate(ProfileFields):
+    original: ProfileFields
 
 
 class Roles(Strict):
